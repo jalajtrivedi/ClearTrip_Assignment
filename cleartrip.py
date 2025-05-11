@@ -21,7 +21,7 @@ class CleartripFlightSearch:
             pop_up.click()
             print("Popup handled")
         except TimeoutException:
-            print("No popup appeared within 30 seconds, moving on...")
+            print("No popup appeared within 30 seconds")
 
     def open_site(self):
         self.driver.get("https://www.cleartrip.com")
@@ -34,7 +34,7 @@ class CleartripFlightSearch:
             )
             flights_tab.click()
         except:
-            print("Flights tab not found or already on flights page.")
+            print("Flights tab not found.")
 
     def enter_from_city(self, source_city):
         try:
@@ -124,61 +124,26 @@ class CleartripFlightSearch:
         except Exception as e:
             print(f"Error during search: {e}")
 
-    # def find_price(self, destination):
-    #     try:
-    #         n=1
-    #         prices = []
-    #         for n in range(1, 6):  # Top 5 prices
-    #             xpath = f"(//p[contains(@class, 'm-0 fs-6 fw-700 c-neutral-900 ta-right')])[{n}]"
-    #             print(xpath)
-    #             try:
-    #                 elem = self.driver.find_element(By.XPATH, xpath)
-    #                 price_text = elem.text.replace("₹", "").replace(",", "").strip()
-    #                 if price_text.isdigit():
-    #                     prices.append(int(price_text))
-    #             except NoSuchElementException:
-    #                 print(f"⚠️ Price element not found at index {n}")
-    #                 continue
-
-    #         if prices:
-    #             print(f"\n💰 Top 5 Cheapest Prices for {destination}: {prices}")
-    #             self.results.append({
-    #                 "From": "BLR",
-    #                 "To": destination,
-    #                 "Top 5 Prices": prices
-    #                     })
-    #         else:
-    #             print(f"⚠️ No prices found for {destination}")
-    #             self.results.append({
-    #                 "From": "BLR",
-    #                 "To": destination,
-    #                 "Top 5 Prices": "No prices found"
-    #             })
-
-    #     except Exception as e:
-    #         print(f"❌ Error finding prices for {destination}: {e}")
-    #         self.results.append({
-    #             "From": "BLR",
-    #             "To": destination,
-    #             "Top 5 Prices": f"Error: {str(e)}"
-    #         })
+   
     def find_price(self, destination):
         try:
             prices = []
             flights = []
+            
 
-            for n in range(1, 6):  # Top 5 results
+            # to get top 5 resultt
+            for n in range(1, 6):  
                 price_xpath = f"(//p[contains(@class, 'm-0 fs-6 fw-700 c-neutral-900 ta-right')])[{n}]"
                 flight_xpath = f"(//p[contains(@class, 'to-ellipsis o-hidden ws-nowrap c-neutral-700 fs-1')])[{n}]"
                 print(price_xpath)
                 print(flight_xpath)
 
                 try:
-                    # Get price
+                    
                     price_elem = self.driver.find_element(By.XPATH, price_xpath)
                     price_text = price_elem.text.replace("₹", "").replace(",", "").strip()
 
-                    # Get flight name
+                    
                     flight_elem = self.driver.find_element(By.XPATH, flight_xpath)
                     flight_text = flight_elem.text.strip()
 
@@ -187,7 +152,7 @@ class CleartripFlightSearch:
                         flights.append(flight_text)
 
                 except NoSuchElementException:
-                    print(f"⚠️ Missing element at index {n}")
+                    print( "element not found")
                     continue
 
             if prices and flights:
@@ -213,7 +178,7 @@ class CleartripFlightSearch:
                 })
 
         except Exception as e:
-            print(f"\n❌ Error fetching data for {destination}: {e}")
+            print(f"\n Error fetching data for {destination}: {e}")
             self.results.append({
                 "From": "BLR",
                 "To": destination,
@@ -224,7 +189,7 @@ class CleartripFlightSearch:
     def save_results(self):
         df = pd.DataFrame(self.results)
         df.to_csv("flight_prices.csv", index=False)
-        print("Results saved to flight_prices.csv")
+        print("Results file created flight_prices.csv")
 
     def close(self):
         self.driver.quit()
@@ -247,7 +212,7 @@ class CleartripFlightSearch:
                 self.driver.back()
                 time.sleep(5)
             except Exception as e:
-                print(f"Error processing destination {destination}: {e}")
+                print(" ")
 
         self.save_results()
         self.close()
